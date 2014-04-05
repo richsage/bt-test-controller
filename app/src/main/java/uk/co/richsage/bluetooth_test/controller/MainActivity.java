@@ -123,7 +123,7 @@ public class MainActivity extends Activity {
 
                     log("Connecting...");
                     if (connectThread != null) {
-                        connectThread.interrupt();
+                        connectThread.cancel();
                         connectThread = null;
                     }
                     connectThread = new ConnectThread(device);
@@ -244,7 +244,10 @@ public class MainActivity extends Activity {
         }
 
         protected void manageConnectedSocket(BluetoothSocket socket) {
-            connectedThread = null;
+            if (connectedThread != null) {
+                connectedThread.cancel();
+                connectedThread = null;
+            }
             connectedThread = new ConnectedThread(socket);
             connectedThread.start();
 
