@@ -31,6 +31,8 @@ public class MainActivity extends Activity {
 
     private final int REQUEST_ENABLE_BT = 1;
 
+    private final int MESSAGE_INCOMING = 1;
+
     private BluetoothAdapter bluetoothAdapter;
     private ArrayAdapter<String> arrayAdapter;
     private ListView listView;
@@ -288,6 +290,8 @@ public class MainActivity extends Activity {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
+                    // Send the obtained bytes to the UI activity
+                    mHandler.obtainMessage(MESSAGE_INCOMING, bytes, -1, buffer).sendToTarget();
                 } catch (IOException e) {
                     android.util.Log.d("Controller", "Exception when reading from the input stream");
                     e.printStackTrace();
@@ -310,4 +314,24 @@ public class MainActivity extends Activity {
             } catch (IOException e) { }
         }
     }
+
+    /**
+     * Handler for incoming data
+     */
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_INCOMING:
+                    log("--- incoming message ---");
+                    byte[] readBuf = (byte []) msg.obj;
+                    String message = new String(readBuf, 0, msg.arg1);
+                    log(message);
+                    log("--- end of message ---");
+                    break;
+                default:
+                    log("Another message type: " + msg.what);
+            }
+        }
+    };
 }
