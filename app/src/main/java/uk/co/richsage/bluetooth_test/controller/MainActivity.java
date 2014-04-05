@@ -89,6 +89,9 @@ public class MainActivity extends Activity {
             log("BT is on already");
         }
 
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+
         // Bind click handler to list rows
         // to connect to a device and send it a message
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -154,12 +157,8 @@ public class MainActivity extends Activity {
         if (id == R.id.action_find_devices) {
 
             // Find all devices
-            // Register the BroadcastReceiver to handle when we get told about a new device
             log("Searching for devices...");
             arrayAdapter.clear();
-
-            IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-            registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
             bluetoothAdapter.startDiscovery();
 
             return true;
